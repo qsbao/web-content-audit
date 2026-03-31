@@ -1,0 +1,49 @@
+id: meeting_notes_v1
+documentType: meeting_notes
+displayName: "Meeting Notes / 会议纪要"
+matchPattern:
+  titlePattern: ".*会议纪要.*|.*Meeting.*Notes.*|.*评审.*"
+
+rules:
+  - id: mn_required_sections
+    category: structure
+    severity: error
+    description: "Meeting notes must contain required sections"
+    check:
+      type: structural
+      requiredSections:
+        - "参会人员"
+        - "议题与讨论"
+        - "待办事项"
+      sectionAliases:
+        "参会人员": ["Attendees", "与会人员", "参与人"]
+        "议题与讨论": ["Discussion", "讨论内容", "会议内容", "议题"]
+        "待办事项": ["Action Items", "后续行动", "TODO", "跟进事项"]
+
+  - id: mn_action_items
+    category: content
+    severity: warning
+    description: "Each action item should have an owner and a deadline"
+    check:
+      type: content
+      targetSection: "待办事项"
+      evaluationPrompt: |
+        Check each action item / TODO in this section.
+        Each item should include:
+        1. A clear description of what needs to be done
+        2. A responsible person (owner)
+        3. A deadline or target date
+        Report which items are missing any of these fields.
+
+  - id: mn_conclusions
+    category: content
+    severity: info
+    description: "Each discussion topic should have a clear conclusion"
+    check:
+      type: content
+      targetSection: "议题与讨论"
+      evaluationPrompt: |
+        Check each discussion topic in this section.
+        Each topic should end with a clear conclusion or decision.
+        Look for keywords like "结论", "决定", "结论:", "Conclusion", "Decision".
+        Flag topics that have discussion but no explicit conclusion.

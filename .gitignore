@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 *.tsbuildinfo
+.playwright-cli
+.playwright
+.claude/settings.local.json
+

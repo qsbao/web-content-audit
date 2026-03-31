@@ -1,0 +1,47 @@
+id: technical_design_v1
+documentType: technical_design
+displayName: "Technical Design / 技术方案"
+matchPattern:
+  titlePattern: ".*技术方案.*|.*Technical.*Design.*|.*系统设计.*|.*架构.*设计.*"
+
+rules:
+  - id: td_required_sections
+    category: structure
+    severity: error
+    description: "Technical design must contain required sections"
+    check:
+      type: structural
+      requiredSections:
+        - "背景与目标"
+        - "方案设计"
+        - "影响范围"
+        - "里程碑"
+      sectionAliases:
+        "背景与目标": ["Background", "背景", "目标", "Overview", "概述"]
+        "方案设计": ["Design", "详细设计", "Solution", "方案", "架构设计"]
+        "影响范围": ["Impact", "影响分析", "Scope", "变更范围"]
+        "里程碑": ["Milestones", "Timeline", "排期", "时间计划", "计划"]
+
+  - id: td_risk_section
+    category: structure
+    severity: warning
+    description: "Technical design should include a risk analysis section"
+    check:
+      type: structural
+      requiredSections:
+        - "风险"
+      sectionAliases:
+        "风险": ["Risks", "风险分析", "Risk Analysis", "风险与挑战"]
+
+  - id: td_goal_clarity
+    category: content
+    severity: warning
+    description: "Background section should clearly state the problem and measurable goals"
+    check:
+      type: content
+      targetSection: "背景与目标"
+      evaluationPrompt: |
+        Check this section for:
+        1. A clear problem statement — what is wrong with the current system?
+        2. Measurable goals — what does success look like? (e.g., performance targets, feature scope)
+        Flag if the problem is vague or goals are not measurable.

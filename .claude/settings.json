@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(where:*)",
+      "Bash(pnpm:*)",
+      "Bash(npm:*)",
+      "Bash(mkdir -p:*)",
+      "Bash(npx tsx:*)",
+      "Bash(claude -p:*)",
+      "Skill(update-config)",
+      "Bash(claude:*)",
+      "Bash(kill %1)",
+      "Bash(npx tsc:*)"
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
+  }
+}
