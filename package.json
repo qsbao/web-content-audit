@@ -1,0 +1,14 @@
+{
+  "name": "web-content-audit",
+  "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
+  "scripts": {
+    "dev:server": "pnpm --filter @web-content-audit/server dev",
+    "build": "pnpm -r build",
+    "build:shared": "pnpm --filter @web-content-audit/shared build",
+    "build:server": "pnpm --filter @web-content-audit/server build",
+    "build:extension": "pnpm --filter @web-content-audit/extension build"
+  }
+}

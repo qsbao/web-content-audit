@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Content Audit</title>
+  <link rel="stylesheet" href="./src/popup/popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Content Audit</h1>
+      <p id="page-title" class="subtitle">—</p>
+    </header>
+
+    <div id="status" class="status">Ready to audit</div>
+
+    <div id="controls">
+      <select id="doc-type">
+        <option value="">Auto-detect</option>
+      </select>
+      <button id="audit-btn" class="btn-primary">Audit</button>
+    </div>
+
+    <div id="summary" class="summary hidden">
+      <div class="stat stat-pass">
+        <span class="stat-num" id="stat-passed">0</span>
+        <span class="stat-label">Passed</span>
+      </div>
+      <div class="stat stat-fail">
+        <span class="stat-num" id="stat-failed">0</span>
+        <span class="stat-label">Failed</span>
+      </div>
+      <div class="stat stat-warn">
+        <span class="stat-num" id="stat-warnings">0</span>
+        <span class="stat-label">Warnings</span>
+      </div>
+    </div>
+
+    <div id="results" class="results"></div>
+  </div>
+
+  <script type="module" src="./src/popup/popup.ts"></script>
+</body>
+</html>

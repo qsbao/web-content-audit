@@ -1,0 +1,16 @@
+{
+  "name": "@web-content-audit/extension",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@web-content-audit/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^6.3.0"
+  }
+}

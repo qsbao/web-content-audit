@@ -1,0 +1,52 @@
+id: weekly_report_v1
+documentType: weekly_report
+displayName: "Weekly Report / 周报"
+matchPattern:
+  titlePattern: ".*周报.*|.*Weekly.*Report.*"
+
+rules:
+  - id: wr_required_sections
+    category: structure
+    severity: error
+    description: "Weekly report must contain required sections"
+    check:
+      type: structural
+      requiredSections:
+        - "本周工作"
+        - "下周计划"
+        - "风险与阻塞"
+      sectionAliases:
+        "本周工作": ["本周完成", "This Week's Work", "本周进展", "Work Done"]
+        "下周计划": ["Next Week's Plan", "下周安排", "Planned Work"]
+        "风险与阻塞": ["Blockers", "问题与风险", "风险", "Risks", "Issues"]
+
+  - id: wr_work_item_quality
+    category: content
+    severity: warning
+    description: "Each work item should include task name, progress, and owner"
+    check:
+      type: content
+      targetSection: "本周工作"
+      evaluationPrompt: |
+        Check each work item in this section. Each item should include:
+        1. A clear task or project name
+        2. Progress indication (percentage, status, or milestone)
+        3. Owner or responsible person
+        Report which items are missing any of these fields.
+      expectedFields:
+        - taskName
+        - progress
+        - owner
+
+  - id: wr_plan_specificity
+    category: content
+    severity: info
+    description: "Next week's plan items should be specific and actionable"
+    check:
+      type: content
+      targetSection: "下周计划"
+      evaluationPrompt: |
+        Evaluate whether each planned item is specific and actionable.
+        A good item has a concrete deliverable and a timeline or deadline hint.
+        A vague item is like "continue working on project X" without specifics.
+        Flag items that are too vague.
