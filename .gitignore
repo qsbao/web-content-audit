@@ -5,4 +5,5 @@ dist/
 .playwright-cli
 .playwright
 .claude/settings.local.json
+screenshots
 

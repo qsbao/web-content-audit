@@ -173,3 +173,6 @@ web-content-audit/
 │       ├── popup/   # Extension popup UI
 │       └── api/     # Backend API client
 ```
+
+## Claude
+PLAYWRIGHT_CLI_SESSION=audit-app claude .
