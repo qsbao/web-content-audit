@@ -56,6 +56,7 @@ export async function runContentChecks(
 
     // Evaluate each rule against the section content
     for (const rule of sectionRules) {
+      console.log(`[Audit] Evaluating rule "${rule.id}" on section "${sectionName}"`);
       try {
         const evaluation = await evaluateContent(
           section.content,

@@ -1,8 +1,13 @@
 import { parseFeishuPage } from "./parser.js";
 import { highlightResults, clearHighlights } from "./highlighter.js";
 
-// Listen for messages from popup
+// Listen for messages from popup / service worker
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === "PING") {
+    sendResponse({ pong: true });
+    return false;
+  }
+
   if (message.type === "PARSE_PAGE") {
     try {
       const document = parseFeishuPage();

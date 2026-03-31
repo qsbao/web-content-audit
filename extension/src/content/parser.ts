@@ -55,7 +55,10 @@ function extractSections(): ParsedSection[] {
   if (!container) return [];
 
   const sections: ParsedSection[] = [];
-  const headingSelector = "h1, h2, h3, h4, h5, h6";
+  // Standard HTML headings + Feishu's div-based headings (div.heading.heading-h1, etc.)
+  const headingSelector =
+    "h1, h2, h3, h4, h5, h6, " +
+    "div.heading-h1, div.heading-h2, div.heading-h3, div.heading-h4, div.heading-h5, div.heading-h6";
   const headings = container.querySelectorAll(headingSelector);
 
   if (headings.length === 0) {
@@ -74,14 +77,21 @@ function extractSections(): ParsedSection[] {
   for (let i = 0; i < headings.length; i++) {
     const heading = headings[i];
     const headingText = heading.textContent?.trim() || "";
-    const headingLevel = parseInt(heading.tagName.substring(1), 10);
+    const headingLevel = parseHeadingLevel(heading);
+
+    // For Feishu, headings are wrapped in div.heading-block — traverse from the
+    // wrapper's siblings rather than the heading element itself.
+    const traverseFrom = heading.closest(".heading-block") || heading;
+    const nextHeading = headings[i + 1] || null;
+    const nextTraverseFrom = nextHeading
+      ? nextHeading.closest(".heading-block") || nextHeading
+      : null;
 
     // Collect all sibling nodes between this heading and the next
     const contentNodes: Node[] = [];
-    let sibling = heading.nextElementSibling;
-    const nextHeading = headings[i + 1] || null;
+    let sibling = traverseFrom.nextElementSibling;
 
-    while (sibling && sibling !== nextHeading) {
+    while (sibling && sibling !== nextTraverseFrom && !sibling.contains(nextHeading)) {
       contentNodes.push(sibling);
       sibling = sibling.nextElementSibling;
     }
@@ -100,6 +110,19 @@ function extractSections(): ParsedSection[] {
   }
 
   return sections;
+}
+
+/**
+ * Extract heading level from native h1-h6 or Feishu's div.heading-h1 through div.heading-h6.
+ */
+function parseHeadingLevel(el: Element): number {
+  const tag = el.tagName.toUpperCase();
+  if (tag.startsWith("H") && tag.length === 2) {
+    return parseInt(tag.substring(1), 10);
+  }
+  // Feishu uses class="heading heading-h2 ..."
+  const match = el.className.match(/heading-h(\d)/);
+  return match ? parseInt(match[1], 10) : 0;
 }
 
 function extractListItems(container: Element | Node): string[] {

@@ -1,5 +1,4 @@
-import type { AuditResponse, AuditResult, ParsedDocument } from "@web-content-audit/shared";
-import { fetchRuleSets, runAudit } from "../api/client.js";
+import type { AuditResponse, AuditResult } from "@web-content-audit/shared";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -13,8 +12,9 @@ const pageTitleEl = $("page-title");
 // Load available rulesets into dropdown
 async function loadRuleSets() {
   try {
-    const rulesets = await fetchRuleSets();
-    for (const rs of rulesets) {
+    const res = await chrome.runtime.sendMessage({ type: "GET_RULESETS" });
+    if (!res?.success) throw new Error(res?.error);
+    for (const rs of res.rulesets) {
       const opt = document.createElement("option");
       opt.value = rs.documentType;
       opt.textContent = rs.displayName;
@@ -26,7 +26,11 @@ async function loadRuleSets() {
 }
 
 function setStatus(text: string, type: "" | "loading" | "error" | "success" = "") {
-  statusEl.textContent = text;
+  if (type === "loading") {
+    statusEl.innerHTML = `<span class="spinner"></span>${escapeHtml(text)}`;
+  } else {
+    statusEl.textContent = text;
+  }
   statusEl.className = `status ${type}`;
 }
 
@@ -76,52 +80,83 @@ function escapeHtml(s: string): string {
   return div.innerHTML;
 }
 
-// Main audit flow
+// Listen for state updates from service worker
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === "AUDIT_STATE_UPDATE") {
+    applyState(message);
+  }
+});
+
+function applyState(state: {
+  status: string;
+  response?: AuditResponse;
+  error?: string;
+}) {
+  switch (state.status) {
+    case "running":
+      auditBtn.disabled = true;
+      auditBtn.classList.add("running");
+      auditBtn.textContent = "Auditing…";
+      setStatus("Running audit — you can close this popup, it will keep going", "loading");
+      break;
+    case "done":
+      auditBtn.disabled = false;
+      auditBtn.classList.remove("running");
+      auditBtn.textContent = "Audit";
+      if (state.response) {
+        const r = state.response;
+        setStatus(
+          r.overallStatus === "pass"
+            ? "All checks passed!"
+            : `Audit complete — ${r.summary.failed} errors, ${r.summary.warnings} warnings`,
+          r.overallStatus === "pass" ? "success" : "error"
+        );
+        renderResults(r);
+      }
+      break;
+    case "error":
+      auditBtn.disabled = false;
+      auditBtn.classList.remove("running");
+      auditBtn.textContent = "Audit";
+      setStatus(state.error || "Audit failed", "error");
+      break;
+    default:
+      auditBtn.disabled = false;
+      auditBtn.classList.remove("running");
+      auditBtn.textContent = "Audit";
+  }
+}
+
+// Main audit flow — delegates to service worker
 auditBtn.addEventListener("click", async () => {
   auditBtn.disabled = true;
-  setStatus("Parsing page...", "loading");
+  setStatus("Starting audit...", "loading");
 
   try {
-    // 1. Ask content script to parse the page
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) throw new Error("No active tab");
 
-    const parseResponse = await chrome.tabs.sendMessage(tab.id, { type: "PARSE_PAGE" });
-    if (!parseResponse?.success) {
-      throw new Error(parseResponse?.error || "Failed to parse page");
-    }
+    pageTitleEl.textContent = tab.title || tab.url || "";
 
-    const document: ParsedDocument = parseResponse.document;
-    pageTitleEl.textContent = document.title || document.url;
-
-    // 2. Run audit
-    setStatus("Running audit...", "loading");
     const selectedType = docTypeSelect.value || undefined;
-    const response = await runAudit({
-      document,
+    await chrome.runtime.sendMessage({
+      type: "START_AUDIT",
+      tabId: tab.id,
       documentType: selectedType,
-    });
-
-    // 3. Show results
-    setStatus(
-      response.overallStatus === "pass"
-        ? "All checks passed!"
-        : `Audit complete — ${response.summary.failed} errors, ${response.summary.warnings} warnings`,
-      response.overallStatus === "pass" ? "success" : "error"
-    );
-    renderResults(response);
-
-    // 4. Send results to content script for highlighting
-    chrome.tabs.sendMessage(tab.id, {
-      type: "HIGHLIGHT_RESULTS",
-      results: response.results,
     });
   } catch (err) {
     setStatus(err instanceof Error ? err.message : String(err), "error");
-  } finally {
     auditBtn.disabled = false;
   }
 });
 
-// Init
-loadRuleSets();
+// On popup open, restore last state
+async function init() {
+  await loadRuleSets();
+  const state = await chrome.runtime.sendMessage({ type: "GET_AUDIT_STATE" });
+  if (state && state.status !== "idle") {
+    applyState(state);
+  }
+}
+
+init();

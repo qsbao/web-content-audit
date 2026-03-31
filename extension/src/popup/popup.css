@@ -43,6 +43,40 @@ header h1 {
 .status.loading {
   background: #e0ecff;
   color: #1d4ed8;
+  position: relative;
+  overflow: hidden;
+}
+
+.status.loading::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: #4f46e5;
+  animation: progress-bar 2.5s ease-in-out infinite;
+}
+
+@keyframes progress-bar {
+  0%   { left: 0; width: 0; }
+  50%  { left: 0; width: 70%; }
+  100% { left: 100%; width: 0; }
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #93b4f5;
+  border-top-color: #1d4ed8;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .status.error {
@@ -89,6 +123,16 @@ header h1 {
 .btn-primary:disabled {
   background: #9ca3af;
   cursor: not-allowed;
+}
+
+.btn-primary.running {
+  background: #6366f1;
+  animation: pulse-btn 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-btn {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
 }
 
 .summary {
