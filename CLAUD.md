@@ -3,7 +3,7 @@
 - Use `curl --noproxy '*'` when testing localhost endpoints (corporate proxy blocks localhost)
 - LLM integration uses OpenAI SDK (`openai` npm package) with configurable baseURL — never Anthropic SDK
 - Content is mixed Chinese/English — rules and matching must handle both
-- pnpm workspaces monorepo: `@web-content-audit/shared`, `@web-content-audit/server`, `@web-content-audit/extension`
+- pnpm workspaces monorepo: `shared/`, `server/`, `extension/` (top-level, no packages/ prefix)
 - Build shared first before server: `pnpm build:shared && pnpm build:server`
-- Extension build: `pnpm build:extension` → outputs to `packages/extension/dist/` (load as unpacked Chrome extension)
+- Extension build: `pnpm build:extension` → outputs to `extension/dist/` (load as unpacked Chrome extension)
 - Server dev: `pnpm dev:server` → runs on http://localhost:3200
