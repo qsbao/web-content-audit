@@ -1,4 +1,11 @@
 import type { ParsedDocument, ParsedSection } from "@web-content-audit/shared";
+import TurndownService from "turndown";
+
+const turndown = new TurndownService({
+  headingStyle: "atx",
+  bulletListMarker: "-",
+  codeBlockStyle: "fenced",
+});
 
 /**
  * Parse the current Feishu wiki page into a structured ParsedDocument.
@@ -68,6 +75,7 @@ function extractSections(): ParsedSection[] {
       headingLevel: 0,
       content: container.textContent?.trim() || "",
       contentHtml: container.innerHTML,
+      contentMarkdown: turndown.turndown(container as HTMLElement),
       items: extractListItems(container),
       domSelector: buildSelector(container),
     });
@@ -104,6 +112,7 @@ function extractSections(): ParsedSection[] {
       headingLevel,
       content: contentEl.textContent?.trim() || "",
       contentHtml: contentEl.innerHTML,
+      contentMarkdown: turndown.turndown(contentEl),
       items: extractListItems(contentEl),
       domSelector: buildSelector(heading),
     });

@@ -12,6 +12,7 @@ export interface ParsedSection {
   headingLevel: number;
   content: string;
   contentHtml: string;
+  contentMarkdown?: string;
   items: string[];
   domSelector: string;
 }

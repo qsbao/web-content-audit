@@ -59,7 +59,7 @@ export async function runContentChecks(
       console.log(`[Audit] Evaluating rule "${rule.id}" on section "${sectionName}"`);
       try {
         const evaluation = await evaluateContent(
-          section.content,
+          section.contentMarkdown!,
           rule.check.evaluationPrompt
         );
 
