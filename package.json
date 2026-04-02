@@ -6,6 +6,8 @@
   },
   "scripts": {
     "dev:server": "pnpm --filter @web-content-audit/server dev",
+    "dev:prompt-lab": "pnpm --filter @web-content-audit/prompt-lab dev",
+    "prompt-lab": "pnpm --filter @web-content-audit/prompt-lab cli",
     "build": "pnpm -r build",
     "build:shared": "pnpm --filter @web-content-audit/shared build",
     "build:server": "pnpm --filter @web-content-audit/server build",

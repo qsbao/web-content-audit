@@ -1,0 +1,48 @@
+ruleId: wr_work_item_quality
+ruleSetId: weekly_report_v1
+description: "Tests for work item quality — task name, progress, owner"
+
+cases:
+  - id: good_complete_items
+    description: "All items have task name, progress, and owner"
+    input: |
+      1. **用户登录模块开发** — 完成OAuth2接入，进度100%，负责人：张三
+      2. **API网关性能优化** — QPS从1200提升至3500，进度80%，负责人：李四
+      3. **单元测试补充** — 覆盖率从60%提升至85%，进度100%，负责人：王五
+    expected:
+      pass: true
+
+  - id: good_english_format
+    description: "English format with all fields"
+    input: |
+      1. **Login Module** — Completed OAuth2 integration, 100% done, Owner: Zhang San
+      2. **API Gateway Optimization** — Improved QPS from 1200 to 3500, 80% done, Owner: Li Si
+    expected:
+      pass: true
+
+  - id: bad_vague_items
+    description: "Vague items without details"
+    input: |
+      1. 做了一些登录相关的开发
+      2. 优化了一下性能
+      3. 写了点测试
+    expected:
+      pass: false
+
+  - id: bad_missing_owner
+    description: "Items without owner"
+    input: |
+      1. **用户登录模块** — 进度100%
+      2. **API网关优化** — 进度80%
+    expected:
+      pass: false
+      issuesMustMention: ["负责人", "owner", "责任人"]
+
+  - id: bad_missing_progress
+    description: "Items without progress indication"
+    input: |
+      1. **用户登录模块** — 负责人：张三
+      2. **API网关优化** — 负责人：李四
+    expected:
+      pass: false
+      issuesMustMention: ["进度", "progress"]

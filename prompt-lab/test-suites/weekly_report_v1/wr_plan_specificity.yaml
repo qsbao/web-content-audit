@@ -1,0 +1,31 @@
+ruleId: wr_plan_specificity
+ruleSetId: weekly_report_v1
+description: "Tests for next-week plan specificity"
+
+cases:
+  - id: good_specific_plans
+    description: "Specific plans with deliverables and timeline"
+    input: |
+      1. 完成用户登录模块的集成测试，产出测试报告 — 周三前
+      2. API网关灰度发布到10%流量 — 周四
+      3. 编写数据库迁移方案文档并提交评审 — 周五
+    expected:
+      pass: true
+
+  - id: bad_vague_plans
+    description: "Vague plans without specifics"
+    input: |
+      1. 继续开发登录功能
+      2. 优化性能
+      3. 写文档
+    expected:
+      pass: false
+
+  - id: mixed_plans
+    description: "Some specific, some vague"
+    input: |
+      1. 完成支付模块联调，产出联调报告 — 周三
+      2. 继续优化
+      3. 做点测试
+    expected:
+      pass: false

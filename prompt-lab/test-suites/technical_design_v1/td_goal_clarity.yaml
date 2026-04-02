@@ -1,0 +1,41 @@
+ruleId: td_goal_clarity
+ruleSetId: technical_design_v1
+description: "Tests for background section problem statement and measurable goals"
+
+cases:
+  - id: good_clear_problem_and_goals
+    description: "Clear problem statement with measurable goals"
+    input: |
+      ## 背景
+      当前系统的API网关使用Nginx反向代理，在高并发场景下（QPS > 5000）出现大量超时错误，
+      P99延迟达到2秒以上，导致用户体验严重下降。
+
+      ## 目标
+      1. P99延迟降低到200ms以内
+      2. 支持QPS 10000+的并发处理能力
+      3. 99.9%的可用性保证
+    expected:
+      pass: true
+
+  - id: bad_vague_problem
+    description: "Vague problem statement, no measurable goals"
+    input: |
+      ## 背景
+      目前系统有一些性能问题，需要优化一下。
+
+      ## 目标
+      提升系统性能，改善用户体验。
+    expected:
+      pass: false
+
+  - id: bad_no_goals
+    description: "Problem stated but no measurable goals"
+    input: |
+      ## 背景
+      当前系统在高并发场景下存在性能瓶颈，API响应时间过长。
+
+      ## 目标
+      优化系统架构，解决性能问题。
+    expected:
+      pass: false
+      issuesMustMention: ["量化", "measurable", "具体", "指标"]

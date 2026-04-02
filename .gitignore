@@ -6,4 +6,5 @@ dist/
 .playwright
 .claude/settings.local.json
 screenshots
+prompt-lab/results/*.json
 

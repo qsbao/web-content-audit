@@ -1,0 +1,54 @@
+ruleId: mn_action_items
+ruleSetId: meeting_notes_v1
+description: "Tests for action item completeness — owner + deadline"
+
+cases:
+  - id: good_all_fields
+    description: "All items have owner + deadline"
+    input: |
+      - [ ] @张三 完成API设计 截止4/10
+      - [ ] @李四 更新测试用例文档 截止4/12
+      - [ ] @王五 准备上线方案 截止4/15
+    expected:
+      pass: true
+
+  - id: good_english_format
+    description: "English format with owner + deadline"
+    input: |
+      - [ ] @Zhang San: Complete API design by 4/10
+      - [ ] @Li Si: Update test documentation by 4/12
+    expected:
+      pass: true
+
+  - id: bad_missing_deadline
+    description: "Items without deadlines"
+    input: |
+      - [ ] @张三 完成API设计
+      - [ ] @李四 更新文档
+    expected:
+      pass: false
+      issuesMustMention: ["截止", "deadline", "日期", "date"]
+
+  - id: bad_missing_owner
+    description: "Items without responsible person"
+    input: |
+      - [ ] 完成API设计 截止4/10
+      - [ ] 更新文档 截止4/12
+    expected:
+      pass: false
+      issuesMustMention: ["负责人", "owner", "责任人"]
+
+  - id: bad_missing_both
+    description: "Items with no owner and no deadline"
+    input: |
+      - 做一下登录功能
+      - 优化性能
+    expected:
+      pass: false
+
+  - id: good_single_item
+    description: "Single well-formed item"
+    input: |
+      - [ ] @张三 发送会议纪要给所有与会人员 截止今天下班前
+    expected:
+      pass: true

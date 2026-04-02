@@ -1,0 +1,41 @@
+ruleId: mn_conclusions
+ruleSetId: meeting_notes_v1
+description: "Tests for discussion topic conclusion check"
+
+cases:
+  - id: good_with_conclusions
+    description: "Each topic has a clear conclusion"
+    input: |
+      ### 议题一：API网关方案选型
+      讨论了Kong和Envoy两个方案的优劣。
+      **结论：** 采用Kong网关，下周开始POC。
+
+      ### 议题二：上线时间
+      讨论了Q2和Q3上线的可行性。
+      **决定：** 定于Q2末（6月底）上线第一版。
+    expected:
+      pass: true
+
+  - id: bad_no_conclusions
+    description: "Discussion without conclusions"
+    input: |
+      ### 议题一：API网关方案选型
+      讨论了Kong和Envoy两个方案的优劣。大家各有看法。
+
+      ### 议题二：上线时间
+      讨论了Q2和Q3上线的可行性，需要再评估。
+    expected:
+      pass: false
+      issuesMustMention: ["结论", "conclusion", "决定"]
+
+  - id: mixed_partial_conclusion
+    description: "Some topics have conclusions, some don't"
+    input: |
+      ### 议题一：数据库选型
+      对比了MySQL和PostgreSQL。
+      **结论：** 使用PostgreSQL。
+
+      ### 议题二：缓存策略
+      讨论了Redis和Memcached，还没确定。
+    expected:
+      pass: false
